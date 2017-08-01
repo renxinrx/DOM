@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>DOM操作--事件绑定-没有封装函数的</title>
+	<style>
+		#box{margin:100px;}
+		#box button{margin-top:10px;}
+	</style>
+	<script src='eventUntil.js'></script>
+</head>
+<body>
+	<b>事件处理程序</b>
+	<ol>
+		<li>HTML事件处理程序</li>
+		<li>DOM0级事件处理程序</li>
+		<li>DOM2级事件处理程序：定义了两个方法用于处理指定和删除事件处理程序的操作。
+		<b>addEventListener()和removeEventListener().他们都接受三个参数，要处理的事件名，作为事件处理程序的函数和布尔值（true表示在捕获阶段执行和false表示在冒泡阶段执行，这是默认情况）</b>
+		</li>
+		<li>IE事件处理程序：
+		<b>两个方法attachEvent()添加事件。detachEvent()删除事件。他们接收两个参数：事件处理程序的名称和事件处理程序的函数</b>
+		</li>
+	</ol>
+
+	<div id="box">
+		<b>HTML事件处理程序</b><br>
+		<!-- js代码直接写在html中的事件 -->
+		<button class='btn1' onclick='alert("我是直接写在html中的button1");'>btn1</button>
+		<!-- 直接写在html中，属于html事件处理程序 -->
+		<button class='btn2' onclick='showMess()'>btn2</button><br>
+
+		<hr>
+		<b>DOM1级事件处理程序</b><br>
+		<button class='btn3'>btn3</button><br>
+		<hr>
+		<b>DOM2级事件处理程序</b><br>
+		<!-- 添加 -->
+		<button class='btn4'>btn4</button>
+		<!-- 添加-删除 -->
+		<button class='btn5'>btn5</button><br>
+		<hr>
+		<b>IE事件处理程序</b><br>
+		<!-- 添加 -->
+		<button class='btn6'>btn6</button>
+		<!-- 添加-删除 -->
+		<button class='btn7'>btn7</button>
+	</div>
+
+	<script>
+
+	//一个显示函数
+	function showMess(e){
+		// event是事件对象，包含一些属性方法信息，对于ie低版本来说 需要用window.event
+		var e = event || window.event;
+		// alert(e.target.nodeName);
+		alert('我是测试函数');
+	};
+
+    //利用DOM1级事件处理程序 绑定事件 ，好处是：js和html不是那么耦合了，修改程序的时候可以少修改点
+	var btn3 = until.getElementsByClass('btn3','box')[0];
+	console.log(btn3);
+	btn3.onclick =function(){
+		showMess();
+		alert('我是DOM1级的事件处理程序');
+	}
+
+	//利用DOM2级事件处理程序  语法要求事件名称中一律不带‘on’ ，比如'onclick'事件要写成'click'。默认是false在冒泡事件执行，true表示在捕获阶段执行
+	var btn4 = until.getElementsByClass('btn4','box')[0];
+	// alert(btn4);
+	until.addEvent(btn4,'click',function(){
+		alert('我是DOM2级事件处理程序绑定函数实现的');
+	},false);
+	// 绑定-删除
+	var btn5 = until.getElementsByClass('btn5','box')[0];
+	until.addEvent(btn5,'click',showMess); //绑定事件
+	until.removeEvent(btn5,'click',showMess); //删除事件绑定，传入的参数和addEventListener()传入的是一样的
+
+	//IE事件处理程序
+	var btn6 = until.getElementsByClass('btn6','box')[0];
+	var btn7 = until.getElementsByClass('btn7','box')[0];
+	until.addEvent(btn6,'click',function(){
+		alert('我是通过IE的事件处理程序绑定的');
+	});
+	// 下面这种形式的解除绑定会失败 需要写成函数名字形式
+	until.removeEvent(btn6,'click',function(){
+		alert('我是通过IE的事件处理程序绑定的');
+	});
+	until.addEvent(btn7,'click',showMess);//绑定
+	until.removeEvent(btn7,'onclick',showMess);//解除绑定
+
+	//测试冒泡事件，点击box里面的任一元素都会触发这个事件
+	var box = document.getElementById('box');
+	until.addEvent(box,'click',function(){
+		alert('我是外层盒子');
+	});
+	</script>
+</body>
+</html>
